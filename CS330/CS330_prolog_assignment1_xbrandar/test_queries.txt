@@ -1,0 +1,131 @@
+| ?- valid_list([a, aa, bb, cc, t, u, v, x, z]).			Checking some packages from the facts.pl file to see if they are in the system
+
+yes																The previous packages were facts in the system
+
+| ?- valid_list([a, aa, bb, cc]).							Checking a smaller list with packages from facts.pl
+
+yes																The packages were in the system and valid_list passes
+
+| ?- valid_list([a, aa, bb, cc, dd]).						Here, the 'dd' element is not in the facts.pl file and valid_list should fail
+
+no 																Since 'dd' was not in the system, valid_list fails
+
+| ?- valid_list([]).										An Empty list is valid
+
+yes																The valid_list passes when given an empty string as input
+
+| ?- unsatisfied_dependency(a, []).							An empty list contains no packages
+
+no 																An empty list cannot have dependencies, so unsatisfied_dependency fails
+
+| ?- unsatisfied_dependency(t, [a]).						package 't' is a dependency of package 'a', but it isn't in the list
+
+true ?															
+
+yes																package 't' wasn't in the list, so unsatisfied_dependency passes
+
+| ?- unsatisfied_dependency(z, [a, x]).						package z is a dependency of both packages 'a' and 'x', but it is not in the list
+
+true ?
+
+yes																package 'z' wasn't in the list, so unsatisfied_dependency passes
+
+| ?- unsatisfied_dependency(z, [a, aa]).					package 'z' is only the dependency of package 'a', but not 'aa' and it is also not in the list
+
+true ?
+
+yes																package 'z' wasn't in the list, so unsatisfied_dependency passes
+
+| ?- unsatisfied_dependency(z, [a, aa, z]).					package 'z' is only the dependency of package 'a', but not 'aa' and it is in the list
+
+no 																package 'z' was in the list, so unsatisfied_dependency fails
+
+| ?- unsatisfied_dependency([]).							An empty list contains no packages
+
+no 																With no packages, comes no dependencies
+
+| ?- unsatisfied_dependency([a, aa]).						packages 'a' and 'aa' have several dependencies each
+
+true ?
+
+(1 ms) yes														Since package 'a' and 'aa' don't have all their dependencies listed, unsatisfied_dependency passes
+
+| ?- unsatisfied_dependency([aa, bb, cc]).					packages 'aa' has all it's dependencies with it in a list
+
+no 																Since 'aa' is accompanied by it's dependencies, unsatisfied_dependency fails
+
+| ?- unsatisfied_dependency([aa, bb]).						packages 'aa' is missing a dependency
+
+true ?
+
+yes																Since 'aa' is missing a dependency, unsatisfied_dependency passes
+
+| ?- unsatisfied_dependency([a, t, u, v, x, y, z]).			packages 'a' has all it's dependencies with it in a list
+
+no 																Since 'a' is accompanied by it's dependencies, unsatisfied_dependency fails
+	
+| ?- unsatisfied_dependency([x, y, z]).						only package 'x' has a dependency, while 'y' and 'z' do not
+
+no 																Since 'x' is accompanied by it's dependency 'z' with 'y' not having any dependeancies, unsatisfied_dependency fails
+
+| ?- unsatisfied_dependency([a, v, z]).						packages 'a', 'v', and 'z' have several dependancies in between them missing
+
+true ?
+
+yes																Since several dependancies are missing, unsatisfied_dependency passes
+
+| ?- dependency_check([]).									An empty list has no dependancies
+
+true ?															
+
+yes																An empty list has no dependancies, therefore all it's dependancies are satisfied
+
+| ?- dependency_check([a, aa]).								packages 'a' and 'aa' have several dependancies
+
+no 																Since several dependancies of 'a' and 'aa' are missing, dependancy_check fails
+
+| ?- dependency_check([aa, bb, cc]).						package 'aa' is listed with it's dependancies
+
+yes																dependancy_check passes since all dependancies are satisfied
+
+| ?- dependency_check([aa, bb]).							packages 'aa' is missing a dependancy, which is not listed
+
+no 																dependancy_check fails since 'aa' is missing a dependancy
+
+| ?- dependency_check([a, t, u, v, x, y, z]).				all packages in the list are listed with all their dependancies if they have any
+
+yes																dependancy_check passes, as all dependancies are satisfied
+
+| ?- dependency_check([v, x, y, z]).						similary, some packages are listed with 'x' and 'v' being the only ones with dependancies
+
+yes																dependancy_check passes, as all dependancies are satisfied
+
+| ?- dependency_check([a, v, z]).							several dependancies between packages 'a', 'v', and 'z' are missing from the list
+
+no 																since several dependancies are missing from the list, dependancy_check fails
+
+| ?- ext_depends(aa, bb).									package 'aa' depends on package 'bb'
+
+true ?
+
+yes																ext_depends passes due to package 'aa' depending on package 'bb'
+
+| ?- ext_depends(bb, aa).									package 'bb' does not depend on package 'aa', as it has no dependencies
+
+no 																ext_depends fails due to package 'bb' not having any dependencies
+
+| ?- ext_depends(a, z).										package 'a' directly depends on package 'z', as shown in the facts.pl file
+
+true ?
+
+(1 ms) yes														ext_depends passes due to package 'a' depending on package 'z'
+
+| ?- ext_depends(a, aa).									package 'a' does not depend on package 'aa', as the have no connections
+
+no 																ext_depends fails due to package 'a' not depending on 'aa'
+
+| ?- ext_depends(t, z).										package 't' depends on 'u' which depends on 'v' which depends on 'x' which depends on 'z'
+
+true ?
+
+yes																ext_depends passes due to package 't' having an indirect dependency on package 'z'
